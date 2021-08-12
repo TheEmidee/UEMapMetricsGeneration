@@ -133,7 +133,12 @@ int32 UMapMetricsGenerationCommandlet::Main( const FString & params )
 
         int SMWithLODsCount = 0;
         int SMWithoutLODsCount = 0;
+        TMap< int, int > SMMaterialCountMap;
         //TMap< FString, int > StaticLightComponentsMap, StationaryLightComponentsMap, MoveableLightComponentsMap;
+
+        int SkelWithLODsCount = 0;
+        int SkelWithoutLODsCount = 0;
+        TMap< int, int > SkelMaterialCountMap;
 
         for ( auto * actor : all_actors )
         {
@@ -187,6 +192,25 @@ int32 UMapMetricsGenerationCommandlet::Main( const FString & params )
                 {
                     SMWithLODsCount++;
                 }
+
+                SMMaterialCountMap.FindOrAdd( sm_component->GetNumMaterials() )++;
+            }
+
+            TArray< USkeletalMeshComponent * > skel_components;
+            actor->GetComponents< USkeletalMeshComponent >( skel_components );
+
+            for ( auto * skel_component : skel_components )
+            {
+                if ( skel_component->GetNumLODs() == 1 )
+                {
+                    SkelWithoutLODsCount++;
+                }
+                else
+                {
+                    SkelWithLODsCount++;
+                }
+
+                SkelMaterialCountMap.FindOrAdd( skel_component->GetNumMaterials() )++;
             }
         }
 
@@ -203,6 +227,26 @@ int32 UMapMetricsGenerationCommandlet::Main( const FString & params )
         UE_LOG( LogMapMetricsGeneration, Log, TEXT( "Static Meshes report:" ) );
         UE_LOG( LogMapMetricsGeneration, Log, TEXT( "With LODs: %i" ), SMWithLODsCount );
         UE_LOG( LogMapMetricsGeneration, Log, TEXT( "Without LODs: %i" ), SMWithoutLODsCount );
+
+        for ( const auto & pair : SMMaterialCountMap )
+        {
+            UE_LOG( LogMapMetricsGeneration, Log, TEXT( "With %i materials : %i" ), pair.Value, pair.Key );
+        }
+
+        UE_LOG( LogMapMetricsGeneration, Log, TEXT( "------------------------------" ) );
+
+        UE_LOG( LogMapMetricsGeneration, Log, TEXT( "" ) );
+
+        UE_LOG( LogMapMetricsGeneration, Log, TEXT( "------------------------------" ) );
+        UE_LOG( LogMapMetricsGeneration, Log, TEXT( "Skeletal Meshes report:" ) );
+        UE_LOG( LogMapMetricsGeneration, Log, TEXT( "With LODs: %i" ), SkelWithLODsCount );
+        UE_LOG( LogMapMetricsGeneration, Log, TEXT( "Without LODs: %i" ), SkelWithoutLODsCount );
+
+        for ( const auto & pair : SkelMaterialCountMap )
+        {
+            UE_LOG( LogMapMetricsGeneration, Log, TEXT( "With %i materials : %i" ), pair.Value, pair.Key );
+        }
+
         UE_LOG( LogMapMetricsGeneration, Log, TEXT( "------------------------------" ) );
 
         world->RemoveFromRoot();
