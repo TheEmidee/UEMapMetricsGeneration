@@ -1,0 +1,22 @@
+{
+    "FileVersion" : 3,
+    "Version": 1.1,
+    "VersionName": "1.1",
+    "EngineVersion": "4.26.0",
+    "FriendlyName" : "Map Metrics Generation",
+    "Description" : "A plug-in which allows to generate metrics reports on maps",
+    "Category" : "Analytics",
+    "CreatedBy" : "Michael Delva",
+    "CreatedByURL": "http://www.emidee.net",
+    "EnabledByDefault" : false,
+    "CanContainContent": false,
+
+    "Modules" :
+    [
+        {
+            "Name" : "MapMetricsGeneration",
+            "Type" : "Editor",
+            "LoadingPhase" : "PreDefault"
+        }
+    ]
+}
