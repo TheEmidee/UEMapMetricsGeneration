@@ -14,7 +14,9 @@ namespace UnrealBuildTool.Rules
                     "CoreUObject",
                     "Engine",
                     "TargetPlatform",
-                    "AssetRegistry"
+                    "AssetRegistry",
+                    "JSON",
+                    "Niagara"
                 }
             );
 
