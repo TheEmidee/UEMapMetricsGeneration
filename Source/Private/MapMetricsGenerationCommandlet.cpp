@@ -1,10 +1,10 @@
 #include "MapMetricsGenerationCommandlet.h"
 
-#include "NiagaraComponent.h"
 #include "Chaos/AABB.h"
 #include "Components/LightComponentBase.h"
 #include "Dom/JsonObject.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
 
@@ -318,7 +318,7 @@ namespace
                 actor_type_count_report->SetNumberField( *pair.Key->GetName(), pair.Value );
             }
 
-            report_json->SetObjectField( "ByMaterialCount", actor_type_count_report );
+            report_json->SetObjectField( "ByClass", actor_type_count_report );
 
             return MakeShareable( new FJsonValueObject( report_json ) );
         }
@@ -401,6 +401,10 @@ int32 UMapMetricsGenerationCommandlet::Main( const FString & params )
     TArray< FString > switches;
     TMap< FString, FString > params_map;
     ParseCommandLine( *params, tokens, switches, params_map );
+
+    FString output_folder( TEXT( "MapMetrics" ) );
+
+    FParse::Value( *params, TEXT( "-OUTPUT_FOLDER=" ), output_folder );
 
     TArray< FString > package_names;
 
@@ -485,7 +489,7 @@ int32 UMapMetricsGenerationCommandlet::Main( const FString & params )
             metrics->GenerateReport( *json_object );
         }
 
-        FString output_file_path = FPaths::ProjectSavedDir() / TEXT( "MapMetrics" ) / FPaths::GetBaseFilename( package_name ) + TEXT( ".json" );
+        FString output_file_path = FPaths::ProjectSavedDir() / output_folder / FPaths::GetBaseFilename( package_name ) + TEXT( ".json" );
         if ( FArchive * archive = IFileManager::Get().CreateFileWriter( *output_file_path ) )
         {
             TSharedRef< TJsonWriter<> > writer = TJsonWriterFactory<>::Create( archive, 0 );
