@@ -492,7 +492,7 @@ int32 UMapMetricsGenerationCommandlet::Main( const FString & params )
         FString output_file_path = FPaths::ProjectSavedDir() / output_folder / FPaths::GetBaseFilename( package_name ) + TEXT( ".json" );
         if ( FArchive * archive = IFileManager::Get().CreateFileWriter( *output_file_path ) )
         {
-            TSharedRef< TJsonWriter<> > writer = TJsonWriterFactory<>::Create( archive, 0 );
+            auto writer = TJsonWriterFactory<TCHAR, TPrettyJsonPrintPolicy<TCHAR>>::Create( archive, 0 );
             FJsonSerializer::Serialize( json_object.ToSharedRef(), writer );
 
             delete archive;
@@ -500,8 +500,8 @@ int32 UMapMetricsGenerationCommandlet::Main( const FString & params )
 
         {
             FString output_string;
-            TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create( &output_string );
-            FJsonSerializer::Serialize( json_object.ToSharedRef(), Writer );
+            auto writer = TJsonWriterFactory<TCHAR, TPrettyJsonPrintPolicy<TCHAR>>::Create( &output_string );
+            FJsonSerializer::Serialize( json_object.ToSharedRef(), writer );
 
             UE_LOG( LogMapMetricsGeneration, Log, TEXT( "%s" ), *output_string );
         }
