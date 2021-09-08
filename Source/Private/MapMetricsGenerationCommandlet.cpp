@@ -489,21 +489,17 @@ int32 UMapMetricsGenerationCommandlet::Main( const FString & params )
             metrics->GenerateReport( *json_object );
         }
 
+        FString output_string;
+        auto writer = TJsonWriterFactory< TCHAR, TPrettyJsonPrintPolicy< TCHAR > >::Create( &output_string );
+        FJsonSerializer::Serialize( json_object.ToSharedRef(), writer );
+
+        UE_LOG( LogMapMetricsGeneration, Log, TEXT( "%s" ), *output_string );
+
         FString output_file_path = FPaths::ProjectSavedDir() / output_folder / FPaths::GetBaseFilename( package_name ) + TEXT( ".json" );
         if ( FArchive * archive = IFileManager::Get().CreateFileWriter( *output_file_path ) )
         {
-            auto writer = TJsonWriterFactory<TCHAR, TPrettyJsonPrintPolicy<TCHAR>>::Create( archive, 0 );
-            FJsonSerializer::Serialize( json_object.ToSharedRef(), writer );
-
+            archive->Serialize( TCHAR_TO_UTF8( *output_string ), output_string.Len() );
             delete archive;
-        }
-
-        {
-            FString output_string;
-            auto writer = TJsonWriterFactory<TCHAR, TPrettyJsonPrintPolicy<TCHAR>>::Create( &output_string );
-            FJsonSerializer::Serialize( json_object.ToSharedRef(), writer );
-
-            UE_LOG( LogMapMetricsGeneration, Log, TEXT( "%s" ), *output_string );
         }
 
         UE_LOG( LogMapMetricsGeneration, Log, TEXT( "Finished processing of %s" ), *package_name );
