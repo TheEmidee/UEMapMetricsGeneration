@@ -12,7 +12,7 @@
 #include <Engine/LevelStreaming.h>
 #include <Engine/World.h>
 #include <Misc/PackageName.h>
-
+#include <NiagaraSystem.h>
 // ReSharper disable once CppInconsistentNaming
 DEFINE_LOG_CATEGORY_STATIC( LogMapMetricsGeneration, Verbose, All )
 
@@ -334,7 +334,7 @@ namespace
             TArray< UNiagaraComponent * > niagara_components;
             actor->GetComponents< UNiagaraComponent >( niagara_components );
 
-            for ( auto * niagara_component : niagara_components )
+            for ( const auto * niagara_component : niagara_components )
             {
                 if ( auto * asset = niagara_component->GetAsset() )
                 {
